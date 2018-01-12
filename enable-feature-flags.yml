@@ -1,0 +1,14 @@
+---
+
+- name: Enable the MountPropagation feature
+  hosts: 127.0.0.1
+  connection: local
+  become: yes
+  tasks:
+
+  - name: Enable MountPropagation feature in kubelet
+    lineinfile:
+      path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+      regexp: "Environment='KUBELET_EXTRA_ARGS.*"
+      line: "Environment='KUBELET_EXTRA_ARGS=--feature-gates=\"MountPropagation\"'"
+      insertafter: 'Environment="KUBELET_CERTIFICATE_ARGS.*'
