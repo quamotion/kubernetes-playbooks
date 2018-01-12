@@ -12,3 +12,10 @@
       regexp: "Environment='KUBELET_EXTRA_ARGS.*"
       line: "Environment='KUBELET_EXTRA_ARGS=--feature-gates=\"MountPropagation\"'"
       insertafter: 'Environment="KUBELET_CERTIFICATE_ARGS.*'
+
+  - name: Enable MountPropagation feature in the API Server
+    lineinfile:
+      path: /etc/kubernetes/manifests/kube-apiserver.yaml
+      regexp: "    - --feature-gates=MountPropagation=true"
+      line: "    - --feature-gates=MountPropagation=true"
+      insertbefore: ".*image:.*"
