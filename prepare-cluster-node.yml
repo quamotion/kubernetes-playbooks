@@ -1,0 +1,79 @@
+---
+
+- name: Prepare a Kubernetes cluster node
+  hosts: 127.0.0.1
+  connection: local
+  become: yes
+  tasks:
+
+  - name: Add the required apt packages
+    apt: name={{item}} state=installed
+    with_items:
+     - apt-transport-https
+     - ca-certificates
+     - curl
+     - software-properties-common
+    state: present
+
+  - name: update kernel settings
+    sysctl:
+      name: net.bridge.bridge-nf-call-iptables
+      value: 1
+      sysctl_set: yes
+      state: present
+      reload: yes
+
+  - name: Add Docker apt key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: Add Docker apt repository
+    apt_repository:
+      repo: deb https://download.docker.com/linux/ubuntu xenial stable
+      state: present
+    register: apt_docker
+
+  - name: Add Kubernetes apt key
+    apt_key:
+      url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      state: present
+
+  - name: Add Kubernetes apt repository
+    apt_repository:
+      repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+      state: present
+    register: apt_kubernetes
+
+  - name: Update apt cache
+    apt:
+      update_cache: yes
+    when: apt_docker.changed or apt_kubernetes.changed
+
+  - name: Install Docker
+    apt:
+      pkg: docker-ce=17.03.2~ce-0~ubuntu-xenial
+    register: docker_install
+
+  - name: Configure Docker cgroupdriver
+    copy:
+      content: |
+               {
+                 "exec-opts": ["native.cgroupdriver=cgroupfs"]
+               }
+      dest: /etc/docker/daemon.json
+    register: docker_cgroupdriver
+
+  - name: Restart docker
+    service:
+      name: docker
+      state: restarted
+    when: docker_cgroupdriver.changed
+
+  - name: Install Kubernetes kubelet kubeadm kubectl
+    apt: name={{item}} state=installed
+    with_items:
+     - kubelet
+     - kubeadm
+     - kubectl
+    state: present
