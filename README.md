@@ -26,3 +26,6 @@ ansible-playbook -K prepare-cluster-node.yml
 * Use [create-cluster.yml](create-cluster.yml) to initialize your cluster master. You should run this playbook only once on your
   master node. If you re-run this script, changes are that your Kubernetes configuration is overwritten.
   If you want to re-create your cluster from scratch, run `sudo kubeadm reset` first.
+* Use [configure-cluster.yml](configure-cluster.yml) to configure your cluster. This includes installing Helm and the
+  Kubernetes Dashboard.
+  Note: The Ansible plugin for Helm depends on pygit2, which brings in Python and some additional dependencies.
