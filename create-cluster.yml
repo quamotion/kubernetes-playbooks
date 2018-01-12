@@ -1,0 +1,28 @@
+---
+
+- name: Initialize a Kubernetes cluster
+  hosts: 127.0.0.1
+  connection: local
+  tasks:
+
+    - name: Run kubeadm init
+      shell: kubeadm init --pod-network-cidr=10.244.0.0/16
+      become: yes
+
+    - name: Remove the Kubernetes configuration directory
+      file:
+        path=$HOME/.kube
+        state=absent
+
+    - name: Create the Kubernetes configuration directory
+      file:
+        path=$HOME/.kube
+        state=directory
+
+    - name: Copy the Kubernetes configuration files
+      shell: |
+        sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+        sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+    - name: Configure networking
+      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/014b2d52dfdc5008f5671c9aed4c5c9ebc34db80/Documentation/kube-flannel.yml
