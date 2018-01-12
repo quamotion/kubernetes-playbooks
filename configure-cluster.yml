@@ -1,0 +1,90 @@
+---
+
+- name: Initialize a Kubernetes cluster
+  hosts: 127.0.0.1
+  connection: local
+  tasks:
+
+  - name: Tainting the master node
+    command: kubectl taint nodes --all node-role.kubernetes.io/master-
+    ignore_errors: yes
+
+  - stat: path=/usr/local/bin/helm
+    register: helm_exists
+
+  - name: Configure Helm service account YAML configuration
+    copy:
+      content: |
+        apiVersion: v1
+        kind: ServiceAccount
+        metadata:
+          name: helm
+          namespace: kube-system
+        ---
+        apiVersion: rbac.authorization.k8s.io/v1beta1
+        kind: ClusterRoleBinding
+        metadata:
+          name: helm
+        roleRef:
+          apiGroup: rbac.authorization.k8s.io
+          kind: ClusterRole
+          name: cluster-admin
+        subjects:
+          - kind: ServiceAccount
+            name: helm
+            namespace: kube-system
+      dest: ~/helm-service-account.yml
+    when: helm_exists.stat.exists == False
+
+  - name: Delete Helm service accounts
+    command: kubectl delete --ignore-not-found=true -f ~/helm-service-account.yml
+    when: helm_exists.stat.exists == False
+
+  - name: Create Helm service accounts
+    command: kubectl create -f ~/helm-service-account.yml
+    when: helm_exists.stat.exists == False
+
+  - name: Create Helm download folder
+    file:
+      path=~/helm/
+      state=directory
+    when: helm_exists.stat.exists == False
+
+  - name: Download and install Helm
+    unarchive:
+      src: https://storage.googleapis.com/kubernetes-helm/helm-v2.7.2-linux-amd64.tar.gz
+      remote_src: yes
+      dest: ~/helm/
+    when: helm_exists.stat.exists == False
+
+  - name: Move helm binary
+    command: sudo mv ~/helm/linux-amd64/helm /usr/local/bin/helm
+    when: helm_exists.stat.exists == False
+
+  - name: Delete Helm download folder
+    file:
+      path: ~/helm/
+      state: absent
+    when: helm_exists.stat.exists == False
+
+  - name: Initializing Helm
+    command: helm init --service-account helm
+
+  - name: Waiting for Helm to become available
+    command: kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+
+  - command: "kubectl get svc -n kube-system tiller-deploy -o jsonpath='{.spec.clusterIP}'"
+    register: tiller_host
+
+  - name: Install Kubernetes dashboard
+    helm:
+      host: "{{ tiller_host.stdout }}"
+      state: present
+      name: kubernetes-dashboard
+      namespace: kube-system
+      chart:
+        name: kubernetes-dashboard
+        version: 0.4.3
+        source:
+          type: repo
+          location: https://kubernetes-charts.storage.googleapis.com/
