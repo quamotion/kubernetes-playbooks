@@ -13,8 +13,14 @@
      - ca-certificates
      - curl
      - software-properties-common
+     - python-pip
+     - libgit2-dev
+     - libffi-dev
     state: present
 
+  - name: Install Python packages
+    command: pip install pyhelm pygit2==0.24.2
+    
   - name: update kernel settings
     sysctl:
       name: net.bridge.bridge-nf-call-iptables
