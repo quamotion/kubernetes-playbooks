@@ -10,7 +10,7 @@
     lineinfile:
       path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
       regexp: "Environment='KUBELET_EXTRA_ARGS.*"
-      line: "Environment='KUBELET_EXTRA_ARGS=--feature-gates=\"MountPropagation\"'"
+      line: "Environment='KUBELET_EXTRA_ARGS=--feature-gates=\"MountPropagation\=true"'"
       insertafter: 'Environment="KUBELET_CERTIFICATE_ARGS.*'
 
   - name: Enable MountPropagation feature in the API Server
