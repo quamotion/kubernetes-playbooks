@@ -1,0 +1,6 @@
+install:
+  - cmd: choco install -y vagrant
+
+build_script:
+  - cmd: cd vagrant
+  - cmd: vagrant up
