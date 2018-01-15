@@ -1,8 +1,7 @@
 ---
 
 - name: Prepare a Kubernetes cluster node
-  hosts: 127.0.0.1
-  connection: local
+  hosts: all
   become: yes
   tasks:
 
@@ -16,7 +15,6 @@
      - python-pip
      - libgit2-dev
      - libffi-dev
-    state: present
 
   - name: Install Python packages
     command: pip install pyhelm pygit2==0.24.2
@@ -87,4 +85,3 @@
      - kubelet
      - kubeadm
      - kubectl
-    state: present
