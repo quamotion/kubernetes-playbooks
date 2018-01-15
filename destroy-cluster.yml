@@ -1,0 +1,11 @@
+---
+
+- name: Destroy the Kubernetes cluster
+  hosts: all
+
+  tasks:
+
+  - name: Remove node from Kubernetes
+    command: kubeadm reset
+    become: yes
+
