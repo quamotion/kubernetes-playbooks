@@ -1,0 +1,9 @@
+---
+
+- name: Join nodes to the Kubernetes cluster
+  hosts: cluster-nodes
+
+  tasks:
+  - name: Join the Kubernetes cluster
+    command: kubeadm join --token a64b93.7ce2f940e0961d56 {{ groups['cluster-master'][0] }}:6443 --discovery-token-unsafe-skip-ca-verification
+    become: true
