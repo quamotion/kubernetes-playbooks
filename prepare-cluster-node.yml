@@ -18,7 +18,7 @@
      - aptitude
 
   - name: Install Python packages
-    command: pip install pyhelm pygit2==0.24.2
+    command: pip install pyhelm pygit2==0.24.2 pyyaml
 
   - name: Loading the br_netfilter kernel module
     modprobe:
