@@ -1,8 +1,7 @@
 ---
 
 - name: Enable the MountPropagation feature
-  hosts: 127.0.0.1
-  connection: local
+  hosts: all
   become: yes
   tasks:
 
@@ -12,10 +11,24 @@
       regexp: "Environment='KUBELET_EXTRA_ARGS.*"
       line: "Environment='KUBELET_EXTRA_ARGS=--feature-gates=\"MountPropagation=true\"'"
       insertafter: 'Environment="KUBELET_CERTIFICATE_ARGS.*'
+    register: kubelet_configuration
 
+  - name: Restart kubelet service
+    systemd:
+      state: restarted
+      daemon_reload: yes
+      name: kubelet
+    when: kubelet_configuration.changed
+
+  - name: Determine whether teh API server configuration exists
+    stat: path=/etc/kubernetes/manifests/kube-apiserver.yaml
+    register: apiserver
+
+  # Updating the api server configuration should automatically restart the API server
   - name: Enable MountPropagation feature in the API Server
     lineinfile:
       path: /etc/kubernetes/manifests/kube-apiserver.yaml
       regexp: "    - --feature-gates=MountPropagation=true"
       line: "    - --feature-gates=MountPropagation=true"
       insertbefore: ".*image:.*"
+    when: apiserver.stat.exists
