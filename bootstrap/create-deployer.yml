@@ -1,8 +1,17 @@
 ---
 - name: Create a deployer user
   hosts: all
+  gather_facts: no
   become: true
   tasks:
+
+  - name: Remove previous SSH keys for these servers
+    become: false
+    local_action: command ssh-keygen -f "~/.ssh/known_hosts" -R {{ inventory_hostname }}
+
+  - name: Wait for nodes to become available
+    wait_for_connection:
+      timeout: 1200
 
   - name: Make sure we have a 'wheel' group
     group:
