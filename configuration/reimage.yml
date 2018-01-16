@@ -1,0 +1,29 @@
+---
+
+- name: Reimage all nodes, using PXE boot
+  hosts: all
+  become: yes
+  tasks:
+
+  - name: Install ipxe-grub2
+    apt:
+      name: grub-ipxe
+      state: installed
+
+  - name: Default to PXE boot in grub
+    lineinfile:
+      state: present
+      dest: /etc/default/grub
+      line: GRUB_DEFAULT=2
+      regexp: "GRUB_DEFAULT=.*"
+
+  - name: Update grub
+    command: update-grub2
+
+  - name: Reboot
+    shell: shutdown -r now "Ansible triggered reboot"
+    ignore_errors: true
+
+  - name: Wait 30 seconds for the reboot to init
+    pause:
+      seconds: 30
