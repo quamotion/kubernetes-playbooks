@@ -1,0 +1,11 @@
+[all:vars]
+ansible_user=quamotion
+ansible_ssh_pass=quamotion
+ansible_become_pass=quamotion
+
+[cluster-master]
+192.168.10.201
+
+[cluster-nodes]
+192.168.10.202
+192.168.10.203
