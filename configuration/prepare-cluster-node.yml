@@ -5,6 +5,12 @@
   become: yes
   tasks:
 
+  - name: Remove the quamotion user
+    user:
+      name: quamotion
+      state: absent
+      remove: yes
+
   - name: Add the required apt packages
     apt: name={{item}} state=installed
     with_items:
