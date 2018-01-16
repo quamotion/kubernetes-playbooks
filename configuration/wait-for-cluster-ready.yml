@@ -1,0 +1,13 @@
+---
+
+- name: Wait for cluster to be ready
+  hosts: cluster-master
+  tasks:
+
+  - name: Wait for all nodes to be ready
+    shell: kubectl get nodes
+    register: kubectl_nodes
+    until: kubectl_nodes.stdout.find('NotReady') == -1
+    delay: 1
+    retries: 100
+
