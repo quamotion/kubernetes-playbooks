@@ -5,6 +5,10 @@
   become: yes
   tasks:
 
+  - name: Set the hostname
+    hostname:
+      name: "{{ inventory_hostname }}"
+
   - name: Remove the quamotion user
     user:
       name: quamotion
