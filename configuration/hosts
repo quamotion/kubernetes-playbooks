@@ -3,8 +3,8 @@ ansible_user=deployer
 ansible_ssh_private_key_file=~/deployer.rsa
 
 [cluster-master]
-192.168.10.201
+qm-nuc-01 ansible_host=192.168.10.201
 
 [cluster-nodes]
-192.168.10.202
-192.168.10.203
+qm-nuc-02 ansible_host=192.168.10.202
+qm-nuc-03 ansible_host=192.168.10.203
