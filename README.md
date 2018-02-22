@@ -19,7 +19,7 @@ sudo apt-get install ansible
 
 For nginx and dnsmasq, you can just run 
 ```
-sudo apt-get install -y dnsmasq ansible
+sudo apt-get install -y dnsmasq ansible nginx
 ```
 
 ### dnsmasq configuration
