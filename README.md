@@ -53,8 +53,8 @@ To create your `/tftp` folder, run:
 ```
 sudo mkdir -p /tftp
 cd /tftp
-wget http://archive.ubuntu.com/ubuntu/dists/xenial-updates/main/installer-amd64/current/images/hwe-netboot/netboot.tar.gz
-tar xf netboot.tar.gz
+wget http://archive.ubuntu.com/ubuntu/dists/xenial-updates/main/installer-amd64/current/images/hwe-netboot/netboot.tar.gz -O ~/netboot.tar.gz
+sudo tar xf ~/netboot.tar.gz
 ```
 
 To add an option to automatically install Ubuntu using a preseed file, add this to `/tftp/ubuntu-installer/amd64/boot-screens/txt.cfg`:
@@ -71,6 +71,14 @@ And make it default adding a timeout to `/tftp/pxelinux.cfg/default`:
 
 ```
 timeout 30
+```
+
+### nginx configuration
+
+Make sure nginx serves up the `preseed.cfg` file:
+
+```
+sudo wget https://raw.githubusercontent.com/quamotion/kubernetes-playbooks/master/preseed.cfg -O /var/www/html/preseed.cfg
 ```
 
 ## Playbook overview
