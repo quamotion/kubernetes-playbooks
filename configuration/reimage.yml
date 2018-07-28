@@ -8,7 +8,7 @@
   - name: Install ipxe-grub2
     apt:
       name: grub-ipxe
-      state: installed
+      state: present
 
   - name: Default to PXE boot in grub
     lineinfile:
