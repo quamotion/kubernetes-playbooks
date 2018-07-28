@@ -5,9 +5,14 @@
   become: true
   tasks:
 
+  - name: Determine whether known_hosts exists
+    local_action: stat path=~/.ssh/known_hosts
+    register: stat_known_hosts
+
   - name: Remove previous SSH keys for these servers
     become: false
     local_action: command ssh-keygen -f "~/.ssh/known_hosts" -R {{ inventory_hostname }}
+    when: stat_known_hosts.stat.exists
 
   - name: Wait for nodes to become available
     wait_for_connection:
@@ -40,7 +45,7 @@
     with_file:
       - deployer.pub
 
-  - name: Disable the quamotion user
+  - name: Disable the default user
     user:
-      name: quamotion
+      name: "{{ ansible_user }}"
       expires: 946684800
