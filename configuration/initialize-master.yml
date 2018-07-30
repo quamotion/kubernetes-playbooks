@@ -5,7 +5,7 @@
 
   tasks:
     - name: Run kubeadm init
-      shell: kubeadm init --pod-network-cidr=10.244.0.0/16 --token a64b93.7ce2f940e0961d56 --kubernetes-version v1.11.0
+      shell: kubeadm init --pod-network-cidr=10.244.0.0/16 --token a64b93.7ce2f940e0961d56 --kubernetes-version v1.11.0 --apiserver-advertise-address {{ hostvars[inventory_hostname]['ansible_host'] }}
       become: yes
 
     - name: Remove the Kubernetes configuration directory
@@ -27,4 +27,4 @@
         sudo chown $(id -u):$(id -g) ~/.kube/config
 
     - name: Configure networking
-      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/014b2d52dfdc5008f5671c9aed4c5c9ebc34db80/Documentation/kube-flannel.yml
+      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.10.0/Documentation/kube-flannel.yml
