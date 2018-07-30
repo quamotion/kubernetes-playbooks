@@ -1,0 +1,14 @@
+---
+
+- name: Configure the VA-API drivers
+  hosts: cluster-nodes
+  become: yes
+
+  tasks:
+  - name: Add the required apt packages
+    apt: name={{item}} state=present
+    with_items:
+     - i965-va-driver
+     - libva2
+
+
