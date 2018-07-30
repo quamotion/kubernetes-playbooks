@@ -6,6 +6,6 @@
   tasks:
 
   - name: Remove node from Kubernetes
-    command: kubeadm reset
+    command: kubeadm reset -f
     become: yes
 
